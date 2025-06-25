@@ -161,6 +161,27 @@ export const CloseIcon = (props: IconProps) => (
   </IconBase>
 );
 
+export const ShopingBagIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <polyline points="17 8 17 14 21 14" />
+  </IconBase>
+);
+
+export const EyeIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </IconBase>
+);
+
+export const PlusCircleIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="8" x2="12" y2="16" />
+    <line x1="8" y1="12" x2="16" y2="12" />
+  </IconBase>
+);
 // Icon mapping object for dynamic icon rendering
 export const iconMap: Record<string, React.FC<IconProps>> = {
   'home': HomeIcon,
@@ -181,7 +202,10 @@ export const iconMap: Record<string, React.FC<IconProps>> = {
   'settings': SettingsIcon,
   'chevron-down': ChevronDownIcon,
   'menu': MenuIcon,
-  'close': CloseIcon
+  'close': CloseIcon,
+  'shopping-bag': ShopingBagIcon,
+  'eye': EyeIcon,
+  'plus-circle': PlusCircleIcon
 };
 
 // Function to get icon component by name

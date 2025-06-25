@@ -119,7 +119,7 @@ export function useUserForm({ user, onSuccess, onCancel }: UseUserFormProps) {
         };
         const response = await userApi.createUser(session.user.accessToken, userData as Omit<User, 'id'>);
         showSuccessToast('Usuario creado', response.message);
-        onSuccess(response.data);
+        onSuccess();
       }
     } catch (error: unknown) {
       handleErrors(error);
