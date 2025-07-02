@@ -4,7 +4,7 @@ import { Button, Divider, Form, Input, Link } from "@heroui/react";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { NextAuthError } from "@/lib/types/nextAuth";
+import { NextAuthError } from "@/types/nextAuth";
 
 export default function AuthForm() {
   const router = useRouter();

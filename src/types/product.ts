@@ -15,9 +15,6 @@ export interface Product {
   // Price at which the product is sold
   sale_price: number;
   
-  // Cost price of the product
-  purchase_price: number;
-  
   // Current available quantity in stock
   current_stock: number;
   
@@ -45,3 +42,36 @@ export interface ResponseProductById {
   message: string;
 }
 
+//INTERFACES PARA EL VENTA DE PRODUCTOS
+export interface CartItem {
+  product: Product;
+  quantity: number;
+}
+export interface ExtendedProduct extends Product {
+  original_stock?: number;
+}
+export interface CartSummaryProps {
+  cart: CartItem[];
+  totalPrice: number;
+  onUpdateQuantity: (productId: number, quantity: number) => void;
+  onRemoveItem: (productId: number) => void;
+  onClearCart: () => void;
+  onCheckout: () => void;
+  getSubtotal: () => number;
+  getIGV: () => number;
+  token: string;
+  idUser: number | string;
+  refetch: () => void;
+}
+export interface ProductGridProps {
+  products: Product[];
+  loading: boolean;
+  error: string | null;
+  onAddToCart: (product: Product) => void;
+  cart: CartItem[];
+}
+export interface ProductCardProps {
+  product: Product;
+  onAddToCart: (product: Product) => void;
+  cart: CartItem[];
+}

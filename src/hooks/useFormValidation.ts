@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { FormDataRegister } from '@/lib/types/register';
-import { ValidationErrors } from '@/lib/types/register';
+import { FormDataRegister } from '@/types/register';
+import { ValidationErrors } from '@/types/register';
 
 
 export function useFormValidation() {

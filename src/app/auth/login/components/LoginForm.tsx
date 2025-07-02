@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { NextAuthError } from '@/lib/types/nextAuth';
+import { NextAuthError } from '@/types/nextAuth';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');

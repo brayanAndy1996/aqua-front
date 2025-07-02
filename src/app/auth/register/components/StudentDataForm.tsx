@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Input, Select, SelectItem, Image } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { StudentDataFormProps } from "@/lib/types/register";
+import { StudentDataFormProps } from "@/types/register";
 
 import { useFormValidation } from '@/hooks/useFormValidation';
 

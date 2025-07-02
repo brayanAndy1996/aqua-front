@@ -26,7 +26,6 @@ export function useProductForm({ product, onSuccess }: UseProductFormProps) {
     name: product?.name || "",
     description: product?.description || "",
     sale_price: product?.sale_price || 0,
-    purchase_price: product?.purchase_price || 0,
     current_stock: product?.current_stock || 0,
     min_stock: product?.min_stock || 0,
     is_active: product?.is_active !== undefined ? product.is_active : true
@@ -45,7 +44,7 @@ export function useProductForm({ product, onSuccess }: UseProductFormProps) {
         ...prev,
         [name]: inputElement.checked !== undefined ? inputElement.checked : value
       }));
-    } else if (type === "number" || name === "sale_price" || name === "purchase_price" || name === "current_stock" || name === "min_stock") {
+    } else if (type === "number" || name === "sale_price" || name === "current_stock" || name === "min_stock") {
       setFormData((prev) => ({
         ...prev,
         [name]: parseFloat(value) || 0
@@ -81,10 +80,6 @@ export function useProductForm({ product, onSuccess }: UseProductFormProps) {
     
     if (formData.sale_price < 0) {
       newErrors.sale_price = "El precio de venta debe ser mayor o igual a 0";
-    }
-    
-    if (formData.purchase_price < 0) {
-      newErrors.purchase_price = "El precio de compra debe ser mayor o igual a 0";
     }
     
     if (formData.current_stock < 0) {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Progress } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { RegistrationStepperProps } from "@/lib/types/register";
+import { RegistrationStepperProps } from "@/types/register";
 
 export const RegistrationStepper: React.FC<RegistrationStepperProps> = ({
   steps,

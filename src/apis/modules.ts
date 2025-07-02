@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ModuleResponse } from '@/lib/types/module';
+import { ModuleResponse } from '@/types/module';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 export const moduleApi = {

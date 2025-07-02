@@ -11,6 +11,7 @@ import {
 import ConfirmationPopUp from "@/components/popUps";
 import ModalEditProduct from "./ModalEditProduct";
 import ModalAddProduct from "./ModalAddProduct";
+import ModalAddStockProduct from "./ModalAddStockProduct";
 import glassStyles from "@/app/styles/glassStyles.module.css";
 
 // Using HeroUI components
@@ -125,6 +126,7 @@ export default function ProductList() {
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
+              <ModalAddStockProduct refreshProducts={refreshProducts} product={product} />
               <ModalEditProduct refreshProducts={refreshProducts} product={product} />
               <ConfirmationPopUp
                 icon={<DeleteIcon />}

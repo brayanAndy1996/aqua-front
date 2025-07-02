@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { moduleApi } from '@/apis/modules';
 import { useSession } from 'next-auth/react';
-import { ModuleInterface } from '@/lib/types/module';
+import { ModuleInterface } from '@/types/module';
 import { 
   HomeIcon, ChevronDownIcon, MenuIcon, CloseIcon,
   getIconByName

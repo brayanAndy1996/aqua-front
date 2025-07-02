@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardBody } from "@heroui/react";
 import { RegistrationStepper } from "@/app/auth/register/components/RegistrationStepper";
 import { registrationSteps } from "@/app/auth/register/components/RegistrationSteps";
-import { FormDataRegister } from "@/lib/types/register";
+import { FormDataRegister } from "@/types/register";
 
 export default function RegisterPage() {
   const [currentStep, setCurrentStep] = useState(0);

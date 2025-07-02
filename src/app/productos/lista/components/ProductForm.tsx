@@ -63,7 +63,6 @@ const ProductForm = forwardRef<ProductFormRef, ProductFormProps>(function Produc
         !!formData.code?.trim() &&
         !!formData.name?.trim() &&
         formData.sale_price >= 0 &&
-        formData.purchase_price >= 0 &&
         formData.current_stock >= 0 &&
         formData.min_stock >= 0;
       onValidityChange(isValid);
@@ -139,33 +138,6 @@ const ProductForm = forwardRef<ProductFormRef, ProductFormProps>(function Produc
               onChange={handleChange}
               isInvalid={!!errors.sale_price}
               errorMessage={errors.sale_price}
-              variant="bordered"
-              radius="lg"
-              startContent={
-                <div className="pointer-events-none flex items-center">
-                  <span className="text-default-400 text-small">$</span>
-                </div>
-              }
-              classNames={{
-                base: "bg-white/80",
-                label: "text-gray-700",
-                input: "text-gray-800",
-                inputWrapper:
-                  "border-gray-300 data-[hover=true]:border-blue-500",
-              }}
-            />
-          </div>
-
-          {/* Precio de compra */}
-          <div>
-            <Input
-              type="number"
-              name="purchase_price"
-              label="Precio de compra *"
-              value={formData.purchase_price?.toString() || ""}
-              onChange={handleChange}
-              isInvalid={!!errors.purchase_price}
-              errorMessage={errors.purchase_price}
               variant="bordered"
               radius="lg"
               startContent={

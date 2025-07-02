@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Card, CardBody, Divider, Image } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { RegistrationConfirmationProps } from "@/lib/types/register";
+import { RegistrationConfirmationProps } from "@/types/register";
 
 export const RegistrationConfirmation: React.FC<RegistrationConfirmationProps> = ({
   formData,

@@ -2,7 +2,7 @@ import { StudentDataForm } from "@/app/auth/register/components/StudentDataForm"
 import { CycleSelection } from "@/app/auth/register/components/CycleSelection";
 import { PaymentForm } from "@/app/auth/register/components/PaymentForm";
 import { RegistrationConfirmation } from "@/app/auth/register/components/RegistrationConfirmation";
-import { FormDataRegister, Step } from "@/lib/types/register";
+import { FormDataRegister, Step } from "@/types/register";
 
 export const registrationSteps = (
   formData: FormDataRegister,

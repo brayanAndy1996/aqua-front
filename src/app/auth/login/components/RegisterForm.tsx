@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/apis/auth';
-import { RegisterCredentials } from '@/lib/types/auth';
+import { RegisterCredentials } from '@/types/auth';
 
 export default function RegisterForm() {
   const [name, setName] = useState('');
