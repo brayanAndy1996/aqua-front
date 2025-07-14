@@ -53,6 +53,14 @@ export default function PurchaseMetrics({ data, loading }: PurchaseMetricsProps)
       color: data.costReduction >= 0 ? 'text-green-600' : 'text-red-600',
       bgColor: data.costReduction >= 0 ? 'bg-green-100' : 'bg-red-100',
       suffix: 'vs período anterior'
+    },
+    {
+      title: 'Producto Más Comprado',
+      value: data.topPurchasedProduct,
+      icon: ChartBarIcon,
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-100',
+      suffix: 'vs período anterior'
     }
   ];
 
@@ -62,7 +70,7 @@ export default function PurchaseMetrics({ data, loading }: PurchaseMetricsProps)
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {metrics.map((metric, index) => (
           <motion.div
             key={metric.title}
@@ -106,7 +114,7 @@ export default function PurchaseMetrics({ data, loading }: PurchaseMetricsProps)
       </div>
 
       {/* Producto más comprado */}
-      {!loading && data.topPurchasedProduct && (
+      {/* {!loading && data.topPurchasedProduct && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -131,7 +139,7 @@ export default function PurchaseMetrics({ data, loading }: PurchaseMetricsProps)
             </CardBody>
           </Card>
         </motion.div>
-      )}
+      )} */}
     </motion.div>
   );
 }

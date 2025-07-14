@@ -9,7 +9,7 @@ export const authApi = {
       const response = await axios.post(`${API_URL}/auth/login`, credentials);
       return response.data;
     } catch (error) {
-      console.log("🚀 ~ login ~ error:", error)
+      console.error("🚀 ~ login ~ error:", error)
       throw error;
     }
   },
@@ -18,7 +18,7 @@ export const authApi = {
       const response = await axios.post(`${API_URL}/auth/register`, credentials);
       return response.data;
     } catch (error) {
-      console.log("🚀 ~ register ~ error:", error)
+      console.error("🚀 ~ register ~ error:", error)
       throw error;
     }
   },

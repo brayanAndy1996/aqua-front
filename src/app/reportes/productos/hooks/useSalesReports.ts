@@ -1,57 +1,35 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
 import { useSession } from 'next-auth/react';
+import { reportApi } from '@/apis/report.api';
+import { dataReportVentas } from '@/types/report';
+import { colorsToGraphDoughnut } from '@/lib/constants/colors';
+import { formDataDaily, formDataMonthly, salesAgrupTo } from '@/lib/utils/reports';
+import { formDataReportVentas } from '@/types/report';
+import { filtersReportToVentas } from '@/types/report';
 
-interface SalesFilters {
-  userId: string;
-  productName: string;
-  productCode: string;
-  startDate: string;
-  endDate: string;
-  singleDate: string;
-}
-
-// Mock data para desarrollo
-const generateMockSalesData = () => {
-  const today = new Date();
-  const timeSeriesData = [];
-  const productSalesData = [
-    { label: 'Clases de Natación', value: 45, color: '#3b82f6' },
-    { label: 'Equipos de Natación', value: 32, color: '#10b981' },
-    { label: 'Accesorios', value: 28, color: '#f59e0b' },
-    { label: 'Mantenimiento', value: 15, color: '#ef4444' },
-    { label: 'Productos Químicos', value: 12, color: '#8b5cf6' },
-  ];
+const formData = (data: dataReportVentas): formDataReportVentas => {
   
-  // Generar datos de serie temporal para los últimos 30 días
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    timeSeriesData.push({
-      time: date.toISOString().split('T')[0],
-      value: Math.floor(Math.random() * 50000) + 10000
-    });
-  }
+  const salesAgrupToProductData = salesAgrupTo(data.sales);
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const productSalesData = salesAgrupToProductData.map((sale: any, index: number) => ({
+    label: sale.product_name || '',
+    value: Number(sale.quantity) || 0,
+    color: colorsToGraphDoughnut[index]
+  }));
 
-  // Generar datos mensuales para los últimos 12 meses
-  const monthlySalesData = [];
-  for (let i = 11; i >= 0; i--) {
-    const date = new Date(today);
-    date.setMonth(date.getMonth() - i);
-    monthlySalesData.push({
-      time: date.toISOString().split('T')[0].substring(0, 7), // YYYY-MM format
-      value: Math.floor(Math.random() * 500000) + 100000
-    });
-  }
+  const timeSeriesData = formDataDaily(data.sales);
+  const monthlySalesData = formDataMonthly(data.sales);
 
   return {
-    salesData: [],
+    salesData: data.sales,
     metricsData: {
-      totalSales: 1247,
-      totalRevenue: 15750000,
-      averageOrderValue: 12630,
-      topSellingProduct: 'Clases de Natación Adultos',
-      salesGrowth: 12.5
+      totalSales: data.totalSales,
+      totalRevenue: data.totalRevenue,
+      averageOrderValue: data.averageOrderValue,
+      topSellingProduct: data.topSellingProduct,
+      salesGrowth: data.salesGrowth
     },
     chartData: {
       timeSeriesData,
@@ -61,7 +39,7 @@ const generateMockSalesData = () => {
   };
 };
 
-export default function useSalesReports(filters: SalesFilters) {
+export default function useSalesReports(filters: filtersReportToVentas) {
   const { data: session, status } = useSession();
 
   // Crear clave única para SWR basada en filtros
@@ -71,27 +49,18 @@ export default function useSalesReports(filters: SalesFilters) {
     return [
       'sales-reports',
       session.user.accessToken,
-      filters.userId,
-      filters.productName,
-      filters.productCode,
-      filters.startDate,
-      filters.endDate,
-      filters.singleDate
+      {...filters}
     ];
   }, [status, session, filters]);
 
   // Usar SWR para obtener datos (por ahora mock data)
   const { data, error, isLoading, mutate } = useSWR(
     key,
-    async () => {
-      // Simular delay de API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    async ([ , accessToken, filters]: [string, string, filtersReportToVentas]) => {
       
       // TODO: Reemplazar con llamada real a la API
-      // const response = await salesApi.getSalesReports(session.user.accessToken, filters);
-      // return response.data;
-      
-      return generateMockSalesData();
+      const response = await reportApi.getReportVentasByFilters(accessToken, filters);
+      return formData(response.data)
     },
     {
       revalidateOnFocus: false,

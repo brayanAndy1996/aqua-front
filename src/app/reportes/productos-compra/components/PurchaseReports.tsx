@@ -3,16 +3,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, Tab } from '@heroui/react';
-import ReportFilters from './ReportFilters';
-import SalesCharts from './SalesCharts';
-import SalesMetrics from './SalesMetrics';
-import SalesDataTable from './SalesDataTable';
-import useSalesReports from '../hooks/useSalesReports';
-import { filtersReportToVentas } from '@/types/report';
-import dayjs from 'dayjs';
 import { TableCellsIcon as TableIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import { filtersReportToVentas } from '@/types/report';
+import ReportFilters from '../../productos/components/ReportFilters';
+import PurchaseCharts from './PurchaseCharts';
+import PurchaseMetrics from './PurchaseMetrics';
+import PurchaseDataTable from './PurchaseDataTable';
+import usePurchaseReports from '../hooks/usePurchaseReports';
+import dayjs from 'dayjs';
 
-export default function SalesReports() {
+export default function PurchaseReports() {
   // Estado para las tabs
   const [selectedTab, setSelectedTab] = useState("reportes");
   
@@ -20,17 +20,17 @@ export default function SalesReports() {
     productId: null,
     startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
     endDate: dayjs().format('YYYY-MM-DD'),
-    userId: '',
+    userId: null,
   });
 
   const { 
-    salesData,
+    purchaseData, 
     metricsData, 
     chartData, 
     loading
-  } = useSalesReports(filters);
+  } = usePurchaseReports(filters);
 
-  const handleFiltersChange = (newFilters: typeof filters) => {
+  const handleFiltersChange = (newFilters: filtersReportToVentas) => {
     setFilters(newFilters);
   };
 
@@ -80,7 +80,7 @@ export default function SalesReports() {
         <ReportFilters 
           filters={filters}
           onFiltersChange={handleFiltersChange}
-          type="sales"
+          type="purchases"
         />
         
         {/* Contenido según la tab seleccionada */}
@@ -94,10 +94,10 @@ export default function SalesReports() {
               variants={tabContentVariants}
             >
               {/* Tabla de datos */}
-              <SalesDataTable 
-                salesData={salesData}
+              <PurchaseDataTable 
+                purchaseData={purchaseData}
                 loading={loading}
-                title="Detalle de Ventas"
+                title="Detalle de Compras"
               />
             </motion.div>
           ) : (
@@ -110,13 +110,13 @@ export default function SalesReports() {
               className="space-y-6"
             >
               {/* Métricas principales */}
-              <SalesMetrics 
+              <PurchaseMetrics 
                 data={metricsData}
                 loading={loading}
               />
 
               {/* Gráficos */}
-              <SalesCharts 
+              <PurchaseCharts 
                 data={chartData}
                 loading={loading}
               />

@@ -1,43 +1,34 @@
 "use client";
-
+import type {RangeValue} from "@react-types/shared";
+import type {DateValue} from "@react-types/datepicker";
+import {parseDate} from "@internationalized/date";
 import { motion } from 'framer-motion';
 import { 
-  Input, 
+  Autocomplete, 
+  AutocompleteItem, 
   Select, 
   SelectItem, 
-  DatePicker, 
+  DateRangePicker, 
   Button,
   Card,
-  CardBody,
-  Switch
+  CardBody
 } from '@heroui/react';
-import { CalendarIcon, MagnifyingGlassIcon, UserIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, UserIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
-
-interface ReportFiltersProps {
-  filters: {
-    userId: string;
-    productName: string;
-    productCode: string;
-    startDate: string;
-    endDate: string;
-    singleDate: string;
-  };
-  onFiltersChange: (filters: any) => void;
-  type: 'sales' | 'purchases';
-}
-
-// Mock data para usuarios
-const mockUsers = [
-  { id: '1', name: 'Juan Pérez', email: 'juan@aquacontrol.com' },
-  { id: '2', name: 'María García', email: 'maria@aquacontrol.com' },
-  { id: '3', name: 'Carlos López', email: 'carlos@aquacontrol.com' },
-  { id: '4', name: 'Ana Martínez', email: 'ana@aquacontrol.com' },
-];
+import { ReportFiltersProps } from '@/types/report';
+import useReportFilters from "../hooks/useReportFilters";
+import dayjs from 'dayjs';
 
 export default function ReportFilters({ filters, onFiltersChange, type }: ReportFiltersProps) {
-  const [isRangeDate, setIsRangeDate] = useState(false);
-
+  const [value, setValue] = useState<RangeValue<DateValue> | null>({
+    start: parseDate(filters.startDate),
+    end: parseDate(filters.endDate),
+  });
+  const [filtersProducts, setfiltersProducts] = useState({
+    productCode: '',
+    productName: ''
+  })
+  const { users, products, productsLoading } = useReportFilters(filtersProducts);
   const handleFilterChange = (key: string, value: string) => {
     onFiltersChange({
       ...filters,
@@ -45,27 +36,21 @@ export default function ReportFilters({ filters, onFiltersChange, type }: Report
     });
   };
 
-  const handleDateModeChange = (isRange: boolean) => {
-    setIsRangeDate(isRange);
-    // Limpiar fechas cuando cambia el modo
-    onFiltersChange({
-      ...filters,
-      startDate: '',
-      endDate: '',
-      singleDate: ''
-    });
-  };
-
   const clearFilters = () => {
     onFiltersChange({
-      userId: '',
-      productName: '',
-      productCode: '',
-      startDate: '',
-      endDate: '',
-      singleDate: ''
+      productId: null,
+      startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
+      endDate: dayjs().format('YYYY-MM-DD'),
+      userId: null
     });
-    setIsRangeDate(false);
+    setfiltersProducts({
+      productCode: '',
+      productName: ''
+    })
+    setValue({
+      start: parseDate(dayjs().startOf('month').format('YYYY-MM-DD')),
+      end: parseDate(dayjs().format('YYYY-MM-DD'))
+    })
   };
 
   return (
@@ -91,103 +76,95 @@ export default function ReportFilters({ filters, onFiltersChange, type }: Report
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            {/* Filtro por Usuario */}
             <Select
               label="Usuario"
               placeholder="Seleccionar usuario"
+              startContent={<UserIcon className="w-4 h-4 text-gray-400" />}
+              classNames={{
+                trigger: "bg-white/50 backdrop-blur-sm border-gray-200",
+              }}
               selectedKeys={filters.userId ? [filters.userId] : []}
               onSelectionChange={(keys) => {
                 const selectedKey = Array.from(keys)[0] as string;
                 handleFilterChange('userId', selectedKey || '');
               }}
-              startContent={<UserIcon className="w-4 h-4 text-gray-400" />}
-              classNames={{
-                trigger: "bg-white/50 backdrop-blur-sm border-gray-200",
-              }}
             >
-              {mockUsers.map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.name}
+              {users.map((user) => (
+                <SelectItem key={user.id}>
+                  {user.nombre_completo}
                 </SelectItem>
               ))}
             </Select>
 
-            {/* Filtro por Nombre de Producto */}
-            <Input
+            <Autocomplete
               label="Nombre del Producto"
               placeholder="Buscar por nombre..."
-              value={filters.productName}
-              onValueChange={(value) => handleFilterChange('productName', value)}
               startContent={<MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />}
-              classNames={{
-                inputWrapper: "bg-white/50 backdrop-blur-sm border-gray-200",
+              isLoading={productsLoading}
+              isDisabled={filtersProducts.productCode.length > 0}
+              inputValue={filtersProducts.productName || ''}
+              items={products || []}
+              onInputChange={(value) => setfiltersProducts((prev) => ({ ...prev, productName: value }))}
+              onSelectionChange={(keys) => {
+                const productSelect = products?.find((product) => product.id === Number(keys))
+                handleFilterChange('productId', productSelect?.id?.toString() || '');
               }}
-            />
+            >
+               {(item) => (
+                <AutocompleteItem key={item.id} className="capitalize">
+                  {item.name}
+                </AutocompleteItem>
+              )}
+            </Autocomplete>
 
-            {/* Filtro por Código de Producto */}
-            <Input
+            <Autocomplete
               label="Código del Producto"
               placeholder="Buscar por código..."
-              value={filters.productCode}
-              onValueChange={(value) => handleFilterChange('productCode', value)}
+              inputValue={filtersProducts.productCode || ''}
               startContent={<MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />}
+              isDisabled={filtersProducts.productName.length > 0}
+              isLoading={productsLoading}
+              items={products || []}
+              onInputChange={(value) => setfiltersProducts((prev) => ({ ...prev, productCode: value }))}
+              onSelectionChange={(keys) => {
+                const productSelect = products?.find((product) => product.id === Number(keys))
+                handleFilterChange('productId', productSelect?.id?.toString() || '');
+              }}
+            >
+              {(item) => (
+                <AutocompleteItem key={item.id} className="capitalize">
+                  {item.code}
+                </AutocompleteItem>
+              )}
+            </Autocomplete>
+            <DateRangePicker
+              aria-label="Seleccionar fecha"
+              label="Fecha"
+              visibleMonths={2}
+              value={value} 
+              onChange={(newValue) => {
+                setValue(newValue);
+                if (newValue) {
+                  const startDateStr = newValue.start?.toString();
+                  const endDateStr = newValue.end?.toString();
+                  
+                  onFiltersChange({
+                    ...filters,
+                    startDate: startDateStr || '',
+                    endDate: endDateStr || ''
+                  });
+                } else {
+                  onFiltersChange({
+                    ...filters,
+                    startDate: '',
+                    endDate: ''
+                  });
+                }
+              }}
               classNames={{
-                inputWrapper: "bg-white/50 backdrop-blur-sm border-gray-200",
+                base: "bg-white/50 backdrop-blur-sm",
               }}
             />
-
-            {/* Switch para tipo de fecha */}
-            <div className="flex flex-col justify-center">
-              <Switch
-                isSelected={isRangeDate}
-                onValueChange={handleDateModeChange}
-                size="sm"
-                color="primary"
-              >
-                <span className="text-sm text-gray-600">
-                  {isRangeDate ? 'Rango de fechas' : 'Fecha específica'}
-                </span>
-              </Switch>
-            </div>
-          </div>
-
-          {/* Filtros de Fecha */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {isRangeDate ? (
-              <>
-                <Input
-                  type="date"
-                  label="Fecha de Inicio"
-                  value={filters.startDate}
-                  onValueChange={(value) => handleFilterChange('startDate', value)}
-                  startContent={<CalendarIcon className="w-4 h-4 text-gray-400" />}
-                  classNames={{
-                    inputWrapper: "bg-white/50 backdrop-blur-sm border-gray-200",
-                  }}
-                />
-                <Input
-                  type="date"
-                  label="Fecha de Fin"
-                  value={filters.endDate}
-                  onValueChange={(value) => handleFilterChange('endDate', value)}
-                  startContent={<CalendarIcon className="w-4 h-4 text-gray-400" />}
-                  classNames={{
-                    inputWrapper: "bg-white/50 backdrop-blur-sm border-gray-200",
-                  }}
-                />
-              </>
-            ) : (
-              <Input
-                type="date"
-                label="Fecha"
-                value={filters.singleDate}
-                onValueChange={(value) => handleFilterChange('singleDate', value)}
-                startContent={<CalendarIcon className="w-4 h-4 text-gray-400" />}
-                classNames={{
-                  inputWrapper: "bg-white/50 backdrop-blur-sm border-gray-200",
-                }}
-              />
-            )}
           </div>
         </CardBody>
       </Card>

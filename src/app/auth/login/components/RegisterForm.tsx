@@ -22,7 +22,7 @@ export default function RegisterForm() {
       await authApi.register(credentials);
       router.push('/auth/login'); // Redirect to login after successful registration
     } catch (err) {
-      console.log("🚀 ~ handleSubmit ~ err:", err)
+      console.error("🚀 ~ handleSubmit ~ err:", err)
       setError('Registration failed. Please try again.');
     }
   };

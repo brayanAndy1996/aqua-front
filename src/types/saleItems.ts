@@ -1,3 +1,4 @@
+import { Product } from "./product";
 
 export interface SaleItems {
     id?: number;
@@ -8,4 +9,6 @@ export interface SaleItems {
     subtotal: number;
     createdAt?: string;
     updatedAt?: string;
+    user_name?: string;
+    product?: Product;
 }

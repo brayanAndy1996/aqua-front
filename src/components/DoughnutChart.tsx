@@ -331,63 +331,63 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
 };
 
 // Componente de ejemplo
-const DoughnutChartExample: React.FC = () => {
-  const sampleData = [
-    { label: 'API Connect', value: 40, color: '#8b5cf6' },
-    { label: 'Containers', value: 42, color: '#06b6d4' },
-    { label: 'IoT', value: 18, color: '#10b981' },
-    { label: 'Watson Assistant', value: 8, color: '#ec4899' },
-    { label: 'Cloud Data & AI', value: 3, color: '#ef4444' },
-    { label: 'Security', value: 7, color: '#f5f5f5' },
-    { label: 'Security', value: 0.1, color: '#22c55e' },
-  ];
+// const DoughnutChartExample: React.FC = () => {
+//   const sampleData = [
+//     { label: 'API Connect', value: 40, color: '#8b5cf6' },
+//     { label: 'Containers', value: 42, color: '#06b6d4' },
+//     { label: 'IoT', value: 18, color: '#10b981' },
+//     { label: 'Watson Assistant', value: 8, color: '#ec4899' },
+//     { label: 'Cloud Data & AI', value: 3, color: '#ef4444' },
+//     { label: 'Security', value: 7, color: '#f5f5f5' },
+//     { label: 'Security', value: 0.1, color: '#22c55e' },
+//   ];
 
-  return (
-    <div style={{ 
-      padding: '20px', 
-      backgroundColor: '#0f0f0f', 
-      minHeight: '100vh',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif'
-    }}>
-      <h1 style={{ color: 'white', marginBottom: '30px', fontSize: '24px', fontWeight: '600' }}>
-        Doughnut Chart Component
-      </h1>
+//   return (
+//     <div style={{ 
+//       padding: '20px', 
+//       backgroundColor: '#0f0f0f', 
+//       minHeight: '100vh',
+//       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif'
+//     }}>
+//       <h1 style={{ color: 'white', marginBottom: '30px', fontSize: '24px', fontWeight: '600' }}>
+//         Doughnut Chart Component
+//       </h1>
       
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px' }}>
-        {/* Ejemplo básico */}
-        <DoughnutChart
-          data={sampleData}
-          centerText="15,250"
-          centerSubtext="Browsers"
-          size={350}
-        />
+//       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px' }}>
+//         {/* Ejemplo básico */}
+//         <DoughnutChart
+//           data={sampleData}
+//           centerText="15,250"
+//           centerSubtext="Browsers"
+//           size={350}
+//         />
 
-        {/* Ejemplo sin leyenda */}
-        <DoughnutChart
-          data={sampleData.slice(0, 4)}
-          showLegend={false}
-          centerText="Total"
-          centerSubtext="Sales"
-          size={280}
-          innerRadius={0.7}
-        />
+//         {/* Ejemplo sin leyenda */}
+//         <DoughnutChart
+//           data={sampleData.slice(0, 4)}
+//           showLegend={false}
+//           centerText="Total"
+//           centerSubtext="Sales"
+//           size={280}
+//           innerRadius={0.7}
+//         />
 
-        {/* Ejemplo con colores personalizados */}
-        <DoughnutChart
-          data={[
-            { label: 'Revenue', value: 65 },
-            { label: 'Costs', value: 25 },
-            { label: 'Profit', value: 10 },
-          ]}
-          colors={['#3b82f6', '#ef4444', '#10b981']}
-          centerText="$125K"
-          centerSubtext="Total"
-          size={300}
-          backgroundColor="#1f1f1f"
-        />
-      </div>
-    </div>
-  );
-};
+//         {/* Ejemplo con colores personalizados */}
+//         <DoughnutChart
+//           data={[
+//             { label: 'Revenue', value: 65 },
+//             { label: 'Costs', value: 25 },
+//             { label: 'Profit', value: 10 },
+//           ]}
+//           colors={['#3b82f6', '#ef4444', '#10b981']}
+//           centerText="$125K"
+//           centerSubtext="Total"
+//           size={300}
+//           backgroundColor="#1f1f1f"
+//         />
+//       </div>
+//     </div>
+//   );
+// };
 
-export default DoughnutChartExample;
+export default DoughnutChart;

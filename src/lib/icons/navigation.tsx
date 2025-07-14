@@ -182,6 +182,16 @@ export const PlusCircleIcon = (props: IconProps) => (
     <line x1="8" y1="12" x2="16" y2="12" />
   </IconBase>
 );
+
+export const reportIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5" d="M10 9H6m9.5 2a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5M6 6h3m9 12l-4.5-3l-2.5 2l-5-4"/>
+    <path d="M3 20.4V3.6a.6.6 0 0 1 .6-.6h16.8a.6.6 0 0 1 .6.6v16.8a.6.6 0 0 1-.6.6H3.6a.6.6 0 0 1-.6-.6Z"/>
+  </IconBase>
+);
 // Icon mapping object for dynamic icon rendering
 export const iconMap: Record<string, React.FC<IconProps>> = {
   'home': HomeIcon,
@@ -205,7 +215,8 @@ export const iconMap: Record<string, React.FC<IconProps>> = {
   'close': CloseIcon,
   'shopping-bag': ShopingBagIcon,
   'eye': EyeIcon,
-  'plus-circle': PlusCircleIcon
+  'plus-circle': PlusCircleIcon,
+  'report': reportIcon
 };
 
 // Function to get icon component by name

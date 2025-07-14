@@ -177,6 +177,7 @@ export default function UserList() {
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-end">
           <Input
+            aria-label="Buscar por nombre, nombre completo o email"
             isClearable
             classNames={{
               base: "w-full sm:max-w-[44%]",

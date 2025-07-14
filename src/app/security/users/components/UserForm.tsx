@@ -222,6 +222,7 @@ const UserForm = forwardRef<UserFormRef, UserFormProps>(function UserForm(
         <div>
           <Checkbox
             name="is_active"
+            aria-label="Estado Activo"
             isSelected={formData.is_active}
             onChange={handleChange}
             color="primary"

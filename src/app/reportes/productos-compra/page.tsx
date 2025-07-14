@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import SalesReports from './components/SalesReports';
+import PurchaseReports from './components/PurchaseReports';
 import glassStyles from '@/app/styles/glassStyles.module.css';
 
-export default function ProductosPage() {
+export default function ProductosCompraPage() {
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -16,12 +16,12 @@ export default function ProductosPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            Reportes de Productos
+            Reportes de Compras
           </motion.h1>
         </div>
         
         <div className="flex-1 overflow-hidden">
-          <SalesReports />
+          <PurchaseReports />
         </div>
       </div>
     </div>

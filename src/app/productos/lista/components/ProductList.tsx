@@ -161,6 +161,7 @@ export default function ProductList() {
               base: "w-full sm:max-w-[44%]",
               inputWrapper: "border-1",
             }}
+            aria-label="Buscar por código o nombre"
             placeholder="Buscar por código o nombre..."
             size="sm"
             startContent={<SearchIcon className="text-default-300" />}

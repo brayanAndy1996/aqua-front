@@ -3,9 +3,12 @@ import { Product, ResponseProduct, ResponseProductById } from '@/types/product';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export const productApi = {
-    getProducts: async (accessToken: string): Promise<ResponseProduct> => {
+    getProducts: async (accessToken: string, filters: { [key: string]: string | number | boolean } = {}): Promise<ResponseProduct> => {
         const response = await axios.get(`${API_URL}/productos/traer-productos`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
+            headers: { Authorization: `Bearer ${accessToken}` },
+            params: {
+                ...filters
+            }
         });
         return response.data;
     },
