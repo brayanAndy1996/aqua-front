@@ -35,6 +35,7 @@ import {
   Spinner,
 } from "@heroui/react";
 import { Role } from "@/types/role";
+import { ConditionalRender } from "@/components/auth/ConditionalRender";
 
 
 function capitalize(str: string) {
@@ -142,17 +143,21 @@ export default function UserList() {
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
-              <ModalAssignRoles user={user} refreshUsers={refreshUsers}/>
-              <ModalEditUser refreshUsers={refreshUsers} user={user} />
-              <ConfirmationPopUp
-                icon={<DeleteIcon />}
-                tooltipContent="Eliminar Usuario"
-                title="¿Eliminar Usuario?"
-                message="El usuario se eliminara permanentemente"
-                onConfirm={() => handleDeleteUser(user.id || 0)}
-                isLoading={isLoadingDelete}
-                color="danger"
-              />
+              <ConditionalRender
+                condition={{ roles: ['Administrador'] }}
+              >
+                <ModalAssignRoles user={user} refreshUsers={refreshUsers}/>
+                <ModalEditUser refreshUsers={refreshUsers} user={user} />
+                <ConfirmationPopUp
+                  icon={<DeleteIcon />}
+                  tooltipContent="Eliminar Usuario"
+                  title="¿Eliminar Usuario?"
+                  message="El usuario se eliminara permanentemente"
+                  onConfirm={() => handleDeleteUser(user.id || 0)}
+                  isLoading={isLoadingDelete}
+                  color="danger"
+                />
+              </ConditionalRender>
             </div>
           );
         default:

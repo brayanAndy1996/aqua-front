@@ -23,6 +23,7 @@ export const authOptions: AuthOptions = {
             email: credentials.email, 
             password: credentials.password
           });
+          console.log("🚀 ~ authorize ~ response:", response)
 
           if (!response.token) {
             throw new Error("No se recibió un token válido");
@@ -59,11 +60,11 @@ export const authOptions: AuthOptions = {
       if (user) {
         token.accessToken = user.token;
         token.user = user.user;
-        token.exp = Math.floor(Date.now() / 1000) + 24 * 60 * 60; // Token expira en 24 horas
       }
       return token;
     },
     async session({ session, token }: any) {
+      console.log("🚀 ~ session ~ token:", token)
       // Aseguramos que la sesión tenga todos los datos del usuario
       session.user = {
         ...session.user,

@@ -9,6 +9,7 @@ export interface ModuleInterface {
     route: string | null;
     created_at?: string;
     updated_at?: string;
+    allowed_roles?: number[];
     children?: ModuleInterface[];
 }
 

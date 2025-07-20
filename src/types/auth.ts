@@ -14,16 +14,30 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface Role {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface User {
   id: string;
   email: string;
   username: string;
+  nombre_completo: string;
+  roles: Role[];
 }
 
 // NextAuth types
 export interface NextAuthUser {
   id: string;
   email: string;
+  nombre_completo: string;
+  roles: Role[];
+  accessToken: string;
 }
 
 export interface NextAuthSession {

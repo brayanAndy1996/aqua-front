@@ -9,11 +9,21 @@ import {
   HomeIcon, ChevronDownIcon, MenuIcon, CloseIcon,
   getIconByName
 } from '@/lib/icons/navigation';
+import { RoleName, ROLE_ID_MAP } from '@/types/roles';
+import { useRoles } from '@/hooks/useRoles';
+import { filterNavigationByRoles } from '@/lib/utils/roleUtils';
 
 const SidebarNavigation = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [modules, setModules] = useState<ModuleInterface[]>([]);
+  // Ya no necesitamos el estado navigationItems porque usamos el filtrado directo
+  const { isAuthenticated, userRoles } = useRoles();
+  
+  // Función para convertir IDs de roles a nombres de roles
+  const convertRoleIdsToNames = (roleIds: number[]): RoleName[] => {
+    return roleIds.map(id => ROLE_ID_MAP[id]).filter(Boolean) as RoleName[];
+  };
   const router = useRouter();
   const [openIds, setOpenIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,21 +72,19 @@ const SidebarNavigation = () => {
 
   // Cargar módulos al montar el componente
   useEffect(() => {
-    const loadModules = async () => {
+    const fetchModules = async () => {
       try {
         setLoading(true);
         const response = await moduleApi.fetchModuleTree(session?.user?.accessToken || '');
         setModules(response.data);
+        setLoading(false);
       } catch (error) {
-        console.error('Error loading modules:', error);
-        // En caso de error, usar datos de fallback o mostrar mensaje
-        setModules([]);
-      } finally {
+        console.error('Error fetching modules:', error);
         setLoading(false);
       }
     };
 
-    loadModules();
+    fetchModules();
   }, [session?.user?.accessToken]);
 
   const toggleOpen = (id: number) => {
@@ -196,7 +204,53 @@ const SidebarNavigation = () => {
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500"></div>
               </div>
             ) : (
-              modules.filter(module => module.is_active && module.parent_id === null).map(module => renderModuleItem(module))
+              // Filtrar módulos según roles del usuario usando filterNavigationByRoles
+              (() => {
+                // Función recursiva para procesar módulos y sus hijos
+                const processModulesWithChildren = (modulesList: ModuleInterface[]): ModuleInterface[] => {
+                  if (!isAuthenticated) return modulesList;
+                  
+                  // Convertir módulos a formato compatible con filterNavigationByRoles
+                  const navigationItems = modulesList.map(module => ({
+                    ...module,
+                    roles: module.allowed_roles ? convertRoleIdsToNames(module.allowed_roles) : ['Administrador'] as RoleName[]
+                  }));
+                  
+                  // Filtrar usando filterNavigationByRoles
+                  const filteredItems = filterNavigationByRoles(navigationItems, userRoles || []);
+                  
+                  // Procesar los módulos filtrados y sus hijos
+                  return filteredItems.map(item => {
+                    // Encontrar el módulo original
+                    const originalModule = modulesList.find(m => m.id === item.id);
+                    if (!originalModule) return null;
+                    
+                    // Procesar hijos recursivamente si existen
+                    if (originalModule.children && originalModule.children.length > 0) {
+                      return {
+                        ...originalModule,
+                        children: processModulesWithChildren(originalModule.children)
+                      };
+                    }
+                    
+                    return originalModule;
+                  }).filter(Boolean) as ModuleInterface[];
+                };
+                
+                // Obtener módulos activos de nivel superior
+                const activeModules = modules.filter(module => module.is_active && module.parent_id === null);
+                
+                // Si no está autenticado, mostrar todos los módulos
+                if (!isAuthenticated) {
+                  return activeModules.map(module => renderModuleItem(module));
+                }
+                
+                // Procesar módulos y sus hijos con filtrado por roles
+                const filteredModules = processModulesWithChildren(activeModules);
+                
+                // Renderizar los módulos filtrados
+                return filteredModules.map(module => renderModuleItem(module));
+              })()
             )}
           </div>
         </div>
