@@ -1,53 +1,34 @@
-import axios from 'axios';
 import { Product, ResponseProduct, ResponseProductById } from '@/types/product';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { apiGet, apiPost, apiPut, apiDelete, buildUrl } from '@/lib/api/apiWrapper';
 
 export const productApi = {
-    getProducts: async (accessToken: string, filters: { [key: string]: string | number | boolean } = {}): Promise<ResponseProduct> => {
-        const response = await axios.get(`${API_URL}/productos/traer-productos`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-            params: {
-                ...filters
-            }
-        });
-        return response.data;
-    },
-    getProductsByPagination: async (accessToken: string, page: number, limit: number, filters: { [key: string]: string | number | boolean } = {}): Promise<ResponseProduct> => {
-        const response = await axios.get(`${API_URL}/productos/traer-productos-con-paginacion`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-            params: {
-                page,
-                limit,
-                ...filters
-            }
-        });
-        return response.data;
+    getProducts: async (filters: { [key: string]: string | number | boolean } = {}): Promise<ResponseProduct> => {
+        const url = buildUrl('/productos/traer-productos', filters);
+        return await apiGet<ResponseProduct>(url);
     },
     
-    getProductById: async (accessToken: string, productId: number): Promise<ResponseProductById> => {
-        const response = await axios.get(`${API_URL}/productos/traer-producto/${productId}`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
+    getProductsByPagination: async (page: number, limit: number, filters: { [key: string]: string | number | boolean } = {}): Promise<ResponseProduct> => {
+        const url = buildUrl('/productos/traer-productos-con-paginacion', {
+            page,
+            limit,
+            ...filters
         });
-        return response.data;
+        return await apiGet<ResponseProduct>(url);
     },
-
-    createProduct: async (accessToken: string, product: Product): Promise<ResponseProductById> => {
-        const response = await axios.post(`${API_URL}/productos/crear-producto`, product, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        return response.data;
+    
+    getProductById: async (productId: number): Promise<ResponseProductById> => {
+        return await apiGet<ResponseProductById>(`/productos/traer-producto/${productId}`);
     },
-
-    updateProduct: async (accessToken: string, productId: number, product: Product): Promise<ResponseProductById> => {
-        const response = await axios.put(`${API_URL}/productos/actualizar-producto/${productId}`, product, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        return response.data;
+    
+    createProduct: async (productData: Omit<Product, 'id'>): Promise<ResponseProductById> => {
+        return await apiPost<ResponseProductById, Omit<Product, 'id'>>('/productos/crear-producto', productData);
     },
-    deleteProduct: async (accessToken: string, productId: number): Promise<ResponseProductById> => {
-        const response = await axios.delete(`${API_URL}/productos/eliminar-producto/${productId}`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        return response.data;
+    
+    updateProduct: async (productId: number, productData: Partial<Product>): Promise<ResponseProductById> => {
+        return await apiPut<ResponseProductById, Partial<Product>>(`/productos/editar-producto/${productId}`, productData);
+    },
+    
+    deleteProduct: async (productId: number): Promise<ResponseProductById> => {
+        return await apiDelete<ResponseProductById>(`/productos/eliminar-producto/${productId}`);
     }
 }

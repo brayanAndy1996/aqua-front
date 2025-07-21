@@ -3,7 +3,6 @@ import { User } from "@/types/user";
 import { useSession } from "next-auth/react";
 import { userApi } from "@/apis/user.api";
 import { showSuccessToast, showDangerToast } from "@/components/toastUtils";
-import { handleErrors } from "@/lib/utils/errors";
 import { useDisclosure } from "@heroui/react";
 import { UserFormRef } from "../components/UserForm";
 
@@ -80,7 +79,6 @@ export function useAddUser({ refreshUsers }: UseAddUserProps): UseAddUserReturn 
     setLoading(true);
     try {
       const response = await userApi.createUser(
-        session.user.accessToken,
         {...userData, rolesIds: selectedRoles.map(Number)}
       );
       showSuccessToast("Usuario creado", response.message);
@@ -90,7 +88,6 @@ export function useAddUser({ refreshUsers }: UseAddUserProps): UseAddUserReturn 
       refreshUsers();
       onClose();
     } catch (error) {
-      handleErrors(error);
       setError(typeof error === "string" ? error : "Error al crear el usuario");
     } finally {
       setLoading(false);

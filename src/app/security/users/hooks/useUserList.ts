@@ -11,7 +11,6 @@ import useSWR from 'swr';
 import { deleteAllNullValues } from '@/lib/utils/functions';
 import { transformStatusFilter } from '@/lib/utils/user';
 import { showSuccessToast } from '@/components/toastUtils';
-import { handleErrors } from '@/lib/utils/errors';
 
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "email", "nombre_completo", "roles", "status", "actions"];
@@ -36,7 +35,7 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 };
 
 export default function useUserList() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [totalData, setTotalData] = useState(0);
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS),
@@ -52,7 +51,7 @@ export default function useUserList() {
 
   // Create a unique key for this data request that includes filter values
   const key = useMemo(() => {
-    if (status !== 'authenticated' || !session?.user?.accessToken) return null;
+    if (status !== 'authenticated') return null;
     
     // Include all dependencies in the key to trigger revalidation when any of them change
     const statusFilterValue = transformStatusFilter(statusFilter);
@@ -60,20 +59,18 @@ export default function useUserList() {
     
     return [
       `users-${page}-${rowsPerPage}-${searchValue}-${statusFilterValue}`,
-      session.user.accessToken,
       page,
       rowsPerPage,
       searchValue,
       statusFilterValue
     ];
-  }, [status, session, page, rowsPerPage, statusFilter, filterValue]);
+  }, [status, page, rowsPerPage, statusFilter, filterValue]);
 
   // Use SWR for data fetching with caching
   const { data, error, isLoading, mutate } = useSWR(
     key,
-    async ([, token, page, rowsPerPage, searchValue, statusFilterValue]: [string, string, number, number, string, boolean | undefined]) => {
+    async ([, page, rowsPerPage, searchValue, statusFilterValue]: [string, number, number, string, boolean | undefined]) => {
       const data = await userApi.getUsersWithPagination(
-        token,
         page,
         rowsPerPage,
         deleteAllNullValues({ is_active: statusFilterValue, nombre: searchValue })
@@ -156,15 +153,16 @@ export default function useUserList() {
   const handleDeleteUser = useCallback(async (userId: number) => {
     setIsLoadingDelete(true);
     try {
-      await userApi.deleteUser(session?.user?.accessToken || '', userId);
+      await userApi.deleteUser(userId);
       showSuccessToast('Usuario eliminado', 'El usuario ha sido eliminado correctamente');
       mutate();
     } catch (error: unknown) {
-      handleErrors(error);
+      // El error ya se maneja automáticamente en el apiWrapper
+      console.error('Error deleting user:', error);
     } finally {
       setIsLoadingDelete(false);
     }
-  }, [session, mutate]);
+  }, [mutate]);
 
   return {
     users: data || [],

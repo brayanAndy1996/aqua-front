@@ -23,7 +23,6 @@ export const authOptions: AuthOptions = {
             email: credentials.email, 
             password: credentials.password
           });
-          console.log("🚀 ~ authorize ~ response:", response)
 
           if (!response.token) {
             throw new Error("No se recibió un token válido");
@@ -64,8 +63,6 @@ export const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }: any) {
-      console.log("🚀 ~ session ~ token:", token)
-      // Aseguramos que la sesión tenga todos los datos del usuario
       session.user = {
         ...session.user,
         ...token.user,

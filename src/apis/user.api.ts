@@ -1,65 +1,42 @@
-import axios from 'axios';
 import { User, ResponseUser, ResponseUserById } from '@/types/user';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { apiGet, apiPost, apiPut, apiDelete, buildUrl } from '@/lib/api/apiWrapper';
 
 export const userApi = {
-    getUsers: async (accessToken: string): Promise<ResponseUser> => {
-        const response = await axios.get(`${API_URL}/users/traer-usuarios`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        return response.data;
+    getUsers: async (): Promise<ResponseUser> => {
+        return await apiGet<ResponseUser>('/users/traer-usuarios');
     },
 
-    getUsersWithPagination: async (accessToken: string, page: number, limit: number, filters: { [key: string]: string | number | boolean } = {}): Promise<ResponseUser> => {
-        const response = await axios.get(`${API_URL}/users/traer-usuarios-con-paginacion`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-            params: {
-                page,
-                limit,
-                ...filters
-            }
+    getUsersWithPagination: async (page: number, limit: number, filters: { [key: string]: string | number | boolean } = {}): Promise<ResponseUser> => {
+        const url = buildUrl('/users/traer-usuarios-con-paginacion', {
+            page,
+            limit,
+            ...filters
         });
-        return response.data;
+        return await apiGet<ResponseUser>(url);
     },
 
-    getUserById: async (accessToken: string, userId: number): Promise<ResponseUserById> => {
-        const response = await axios.get(`${API_URL}/users/traer-usuario/${userId}`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        return response.data;
+    getUserById: async (userId: number): Promise<ResponseUserById> => {
+        return await apiGet<ResponseUserById>(`/users/traer-usuario/${userId}`);
     },
     
-    createUser: async (accessToken: string, userData: Omit<User, 'id'>): Promise<ResponseUserById> => {
+    createUser: async (userData: Omit<User, 'id'>): Promise<ResponseUserById> => {
         // Pass the userData directly to the backend, including the roles property
         // The backend will handle the role assignment
-        const response = await axios.post(`${API_URL}/users/crear-usuario`, userData, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        return response.data;
+        return await apiPost<ResponseUserById, Omit<User, 'id'>>('/users/crear-usuario', userData);
     },
     
-    updateUser: async (accessToken: string, userId: number, userData: Partial<User>): Promise<ResponseUserById> => {
-        const response = await axios.put(`${API_URL}/users/editar-usuario/${userId}`, userData, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        return response.data;
+    updateUser: async (userId: number, userData: Partial<User>): Promise<ResponseUserById> => {
+        return await apiPut<ResponseUserById, Partial<User>>(`/users/editar-usuario/${userId}`, userData);
     },
     
-    deleteUser: async (accessToken: string, userId: number): Promise<ResponseUserById> => {
-        const response = await axios.delete(`${API_URL}/users/eliminar-usuario/${userId}`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        return response.data;
+    deleteUser: async (userId: number): Promise<ResponseUserById> => {
+        return await apiDelete<ResponseUserById>(`/users/eliminar-usuario/${userId}`);
     },
-
-    assignRoles: async (accessToken: string, userId: number, roleIds: number[]): Promise<ResponseUserById> => {
-        const response = await axios.post(`${API_URL}/users/assign-roles`, {
+    
+    assignRoles: async (userId: number, roleIds: number[]): Promise<ResponseUserById> => {
+        return await apiPost<ResponseUserById, { userId: number; roleIds: number[] }>('/users/asignar-roles', {
             userId,
             roleIds
-        }, {
-            headers: { Authorization: `Bearer ${accessToken}` }
         });
-        return response.data;
     },
 };
