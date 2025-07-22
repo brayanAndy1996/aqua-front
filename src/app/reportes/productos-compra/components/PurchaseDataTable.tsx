@@ -32,7 +32,6 @@ interface PurchaseDataTableProps {
 }
 
 export default function PurchaseDataTable({ purchaseData, loading, title }: PurchaseDataTableProps) {
-  console.log("🚀 ~ PurchaseDataTable ~ purchaseData:", purchaseData)
   // Estado para la paginación
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
