@@ -245,68 +245,165 @@ export default function PurchaseDataTable({ purchaseData, loading, title }: Purc
             </div>
           </div>
         </CardHeader>
-        <CardBody>
-          <Table 
-            aria-label="Tabla de compras"
-            classNames={{
-              wrapper: "bg-transparent shadow-none",
-              th: "bg-gray-50/80 text-gray-700 font-semibold",
-              td: "text-gray-600",
-            }}
-            bottomContent={
-              totalPages > 0 ? (
-                <div className="flex w-full justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="text-default-400 text-small">Filas por página:</span>
-                    <Select
-                      aria-label="Filas por página"
-                      className="bg-transparent outline-none text-default-400 text-small w-20"
-                      size="sm"
-                      selectedKeys={[rowsPerPage.toString()]}
-                      onChange={handleRowsPerPageChange}
-                    >
-                      <SelectItem key="5">5</SelectItem>
-                      <SelectItem key="10">10</SelectItem>
-                      <SelectItem key="25">25</SelectItem>
-                      <SelectItem key="50">50</SelectItem>
-                      <SelectItem key="100">100</SelectItem>
-                    </Select>
+        <CardBody className="px-0 py-0">
+          {/* Vista Desktop - Tabla */}
+          <div className="hidden lg:block">
+            <Table 
+              aria-label="Tabla de compras"
+              className="min-h-[400px]"
+              classNames={{
+                wrapper: "bg-transparent shadow-none",
+                th: "bg-gray-50/80 text-gray-700 font-semibold",
+                td: "text-gray-600",
+              }}
+            >
+              <TableHeader>
+                {columns.map(column => (
+                  <TableColumn key={column.key}>{column.label}</TableColumn>
+                ))}
+              </TableHeader>
+              <TableBody 
+                emptyContent={
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <FileText size={48} className="text-gray-300 mb-4" />
+                    <p className="text-gray-500 text-lg">
+                      No hay datos de compras disponibles
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      Ajusta los filtros para ver más resultados
+                    </p>
                   </div>
-                  <Pagination
-                    isCompact
-                    showControls
-                    showShadow
-                    color="primary"
-                    page={page}
-                    total={totalPages}
-                    onChange={handlePageChange}
-                  />
-                  <div className="hidden sm:flex w-[30%] justify-end gap-2">
-                    <span className="text-default-400 text-small">
-                      {`${(page - 1) * rowsPerPage + 1}-${Math.min(page * rowsPerPage, processedData.length)} de ${processedData.length}`}
-                    </span>
-                  </div>
-                </div>
-              ) : null
-            }
-          >
-            <TableHeader>
-              {columns.map(column => (
-                <TableColumn key={column.key}>{column.label}</TableColumn>
-              ))}
-            </TableHeader>
-            <TableBody emptyContent={"No hay compras para mostrar"}>
-              {paginatedData.map((item) => (
-                <TableRow key={item.id}>
-                  {columns.map(column => (
-                    <TableCell key={`${item.id}-${column.key}`}>
-                      {renderCell(item, column.key)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                }
+              >
+                {paginatedData.map((item) => (
+                  <TableRow key={item.id}>
+                    {columns.map(column => (
+                      <TableCell key={`${item.id}-${column.key}`}>
+                        {renderCell(item, column.key)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Vista Móvil - Cards */}
+          <div className="block lg:hidden p-4">
+            {paginatedData.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <FileText size={48} className="text-gray-300 mb-4" />
+                <p className="text-gray-500 text-lg">
+                  No hay datos de compras disponibles
+                </p>
+                <p className="text-gray-400 text-sm">
+                  Ajusta los filtros para ver más resultados
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {paginatedData.map((item) => (
+                  <Card key={item.id} className="w-full bg-white/80 backdrop-blur-sm border border-gray-200 shadow-sm">
+                    <CardBody className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Chip 
+                              size="sm" 
+                              variant="flat" 
+                              color="primary"
+                              className="font-mono"
+                            >
+                              #{item.id}
+                            </Chip>
+                            <Chip 
+                              size="sm" 
+                              variant="flat" 
+                              color="secondary"
+                              className="font-mono"
+                            >
+                              {item.quantity}
+                            </Chip>
+                          </div>
+                          <p className="font-medium text-gray-800 text-sm">
+                            {item.product_name}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-gray-500">Precio Unitario:</span>
+                          <span className="text-sm font-mono text-success">
+                            {formatCurrency(item.purchase_price)}
+                          </span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-gray-500">Total:</span>
+                          <span className="text-sm font-mono font-semibold text-success">
+                            {formatCurrency(item.total)}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-gray-500">Usuario:</span>
+                          <span className="text-sm font-mono text-gray-600">
+                            {item.user_name}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs text-gray-500">Notas:</span>
+                          <span className="text-sm text-gray-600 bg-gray-50 p-2 rounded text-left">
+                            {item.notes}
+                          </span>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Paginación y selector de filas por página */}
+          {totalPages > 0 && (
+            <div className="flex flex-col lg:flex-row justify-between items-center gap-4 px-4 py-2 bg-gray-50/50">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-500 text-sm">Filas por página:</span>
+                <Select
+                  aria-label="Filas por página"
+                  className="bg-transparent outline-none text-gray-500 text-sm w-20"
+                  size="sm"
+                  selectedKeys={[rowsPerPage.toString()]}
+                  onChange={handleRowsPerPageChange}
+                >
+                  <SelectItem key="5">5</SelectItem>
+                  <SelectItem key="10">10</SelectItem>
+                  <SelectItem key="25">25</SelectItem>
+                  <SelectItem key="50">50</SelectItem>
+                  <SelectItem key="100">100</SelectItem>
+                </Select>
+              </div>
+              
+              <Pagination
+                isCompact
+                showControls
+                showShadow
+                color="primary"
+                page={page}
+                total={totalPages}
+                onChange={handlePageChange}
+              />
+              
+              <div className="hidden lg:flex justify-end">
+                <span className="text-gray-500 text-sm">
+                  {`${(page - 1) * rowsPerPage + 1}-${Math.min(page * rowsPerPage, processedData.length)} de ${processedData.length}`}
+                </span>
+              </div>
+            </div>
+          )}
         </CardBody>
       </Card>
     </motion.div>

@@ -27,7 +27,7 @@ export default function LoginForm() {
       if (result?.error) {
         setError(result.error);
       } else if (result?.ok) {
-        router.push('/dashboard');
+        router.push('/');
       }
     } catch (error: unknown) {
       console.error("Error en login:", error);

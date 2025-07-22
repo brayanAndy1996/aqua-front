@@ -58,7 +58,6 @@ export default function useProductList() {
     
     return [
       `products-${page}-${rowsPerPage}-${searchValue}-${statusFilterValue}`,
-      session.user.accessToken,
       page,
       rowsPerPage,
       searchValue,
@@ -77,9 +76,8 @@ export default function useProductList() {
   // Use SWR for data fetching with caching
   const { data, error, isLoading, mutate } = useSWR(
     key,
-    async ([, token, page, rowsPerPage, searchValue, statusFilterValue]: [string, string, number, number, string, boolean | undefined]) => {
+    async ([, page, rowsPerPage, searchValue, statusFilterValue]: [string, number, number, string, boolean | undefined]) => {
       const data = await productApi.getProductsByPagination(
-        token,
         page,
         rowsPerPage,
         deleteAllNullValues({ is_active: statusFilterValue, name: searchValue })
@@ -170,7 +168,7 @@ export default function useProductList() {
   const handleDeleteProduct = useCallback(async (productId: number) => {
     setIsLoadingDelete(true);
     try {
-      const response = await productApi.deleteProduct(session?.user?.accessToken || '', productId);
+      const response = await productApi.deleteProduct(productId);
       showSuccessToast('Producto eliminado', response.message);
       mutate();
     } catch (error: unknown) {
@@ -178,7 +176,7 @@ export default function useProductList() {
     } finally {
       setIsLoadingDelete(false);
     }
-  }, [session, mutate]);
+  }, [mutate]);
 
   return {
     products: data || [],

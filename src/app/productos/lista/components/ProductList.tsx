@@ -3,42 +3,23 @@
 import React, { useMemo, useCallback } from "react";
 import { Product } from "@/types/product";
 import useProductList from "@/app/productos/lista/hooks/useProductList";
-import {
-  SearchIcon,
-  ChevronDownIcon,
-  DeleteIcon
-} from "@/lib/icons/ui";
+import { DeleteIcon } from "@/lib/icons/ui";
 import ConfirmationPopUp from "@/components/popUps";
 import ModalEditProduct from "./ModalEditProduct";
 import ModalAddProduct from "./ModalAddProduct";
 import ModalAddStockProduct from "./ModalAddStockProduct";
+import ResponsiveProductTable from "./ResponsiveProductTable";
 import glassStyles from "@/app/styles/glassStyles.module.css";
 
 // Using HeroUI components
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableColumn,
-  TableRow,
-  TableCell,
-  Input,
-  Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
   Chip,
   Pagination,
   Spinner,
 } from "@heroui/react";
 
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(amount);
 }
 
 export default function ProductList() {
@@ -63,11 +44,17 @@ export default function ProductList() {
     columns,
     statusOptions,
     filteredItems,
-    setFilterValue,
+
     statusColorMap,
     handleDeleteProduct,
     isLoadingDelete
   } = useProductList();
+
+  // Función para limpiar filtros
+  const handleClearFilters = useCallback(() => {
+    onSearchChange("");
+    setStatusFilter("all");
+  }, [onSearchChange, setStatusFilter]);
 
   const renderCell = useCallback(
     (product: Product, columnKey: React.Key) => {
@@ -99,35 +86,21 @@ export default function ProductList() {
         case "current_stock":
           const stockStatus = product.current_stock <= product.min_stock ? "danger" : "success";
           return (
-            <div className="flex flex-col">
-              <Chip
-                className="capitalize border-none gap-1"
-                color={stockStatus}
-                size="sm"
-                variant="flat"
-              >
-                {product.current_stock}
-              </Chip>
-            </div>
+            <Chip className="capitalize" color={stockStatus} size="sm" variant="flat">
+              {product.current_stock}
+            </Chip>
           );
         case "status":
-          const status = product.is_active ? "active" : "inactive";
-          const statusText = product.is_active ? "Activo" : "Inactivo";
           return (
-            <Chip
-              className="capitalize border-none gap-1 text-default-600"
-              color={statusColorMap[status]}
-              size="sm"
-              variant="dot"
-            >
-              {statusText}
+            <Chip className="capitalize" color={statusColorMap[product.is_active ? "active" : "inactive"]} size="sm" variant="flat">
+              {product.is_active ? "Activo" : "Inactivo"}
             </Chip>
           );
         case "actions":
           return (
-            <div className="relative flex items-center gap-2">
-              <ModalAddStockProduct refreshProducts={refreshProducts} product={product} />
+            <div className="relative flex justify-end items-center gap-2">
               <ModalEditProduct refreshProducts={refreshProducts} product={product} />
+              <ModalAddStockProduct refreshProducts={refreshProducts} product={product} />
               <ConfirmationPopUp
                 icon={<DeleteIcon />}
                 tooltipContent="Eliminar Producto"
@@ -151,87 +124,7 @@ export default function ProductList() {
     [refreshProducts, statusColorMap, handleDeleteProduct, isLoadingDelete]
   );
 
-  const topContent = useMemo(() => {
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            classNames={{
-              base: "w-full sm:max-w-[44%]",
-              inputWrapper: "border-1",
-            }}
-            aria-label="Buscar por código o nombre"
-            placeholder="Buscar por código o nombre..."
-            size="sm"
-            startContent={<SearchIcon className="text-default-300" />}
-            value={filterValue}
-            variant="bordered"
-            onClear={() => setFilterValue("")}
-            onValueChange={onSearchChange}
-          />
-          <div className="flex gap-3">
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDownIcon className="text-small" />}
-                  size="sm"
-                  variant="flat"
-                >
-                  Estado
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Filtro de Estado"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {status.name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDownIcon className="text-small" />}
-                  size="sm"
-                  variant="flat"
-                >
-                  Columnas
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Columnas de la Tabla"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
-              >
-                {columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
-                    {capitalize(column.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <ModalAddProduct refreshProducts={refreshProducts} />
-          </div>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total {totalData} productos
-          </span>
-        </div>
-      </div>
-    );
-  }, [filterValue, statusFilter, visibleColumns, onSearchChange, totalData, columns, refreshProducts, setFilterValue, setStatusFilter, setVisibleColumns, statusOptions]);
+
 
   const bottomContent = useMemo(() => {
     return (
@@ -266,44 +159,33 @@ export default function ProductList() {
 
   return (
     <>
-      <div className={`${glassStyles.glassCard} rounded-xl p-6`}>
-        <Table
-          isCompact
-          removeWrapper
-          aria-label="Tabla de productos con celdas personalizadas, paginación y ordenamiento"
-          bottomContent={bottomContent}
-          bottomContentPlacement="outside"
+      <div className={`${glassStyles.glassCard} rounded-xl p-4 lg:p-6`}>
+        {/* Tabla Responsive con filtros integrados */}
+        <ResponsiveProductTable
+          products={sortedItems}
+          headerColumns={headerColumns}
+          renderCell={renderCell}
           classNames={classNames}
-          selectionMode="none"
           sortDescriptor={sortDescriptor}
-          topContent={topContent}
-          topContentPlacement="outside"
-          onSortChange={setSortDescriptor}
-        >
-          <TableHeader columns={headerColumns}>
-            {(column) => (
-              <TableColumn
-                key={column.uid}
-                align={column.uid === "actions" ? "center" : "start"}
-                allowsSorting={column.sortable}
-              >
-                {column.name}
-              </TableColumn>
-            )}
-          </TableHeader>
-          <TableBody
-            emptyContent={"No se encontraron productos"}
-            items={sortedItems}
-          >
-            {(item) => (
-              <TableRow key={item.id}>
-                {(columnKey) => (
-                  <TableCell>{renderCell(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+          setSortDescriptor={setSortDescriptor}
+          statusColorMap={statusColorMap}
+          filterValue={filterValue}
+          onSearchChange={onSearchChange}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          visibleColumns={visibleColumns}
+          setVisibleColumns={setVisibleColumns}
+          statusOptions={statusOptions}
+          columns={columns}
+          totalData={totalData}
+          onClearFilters={handleClearFilters}
+          addProductComponent={<ModalAddProduct refreshProducts={refreshProducts} />}
+        />
+
+        {/* Paginación */}
+        <div className="mt-6">
+          {bottomContent}
+        </div>
       </div>
     </>
   );

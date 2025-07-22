@@ -1,74 +1,72 @@
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
+import { useUserList } from "../hooks/useUserList";
 import { User } from "@/types/user";
-import useUserList from "@/app/security/users/hooks/useUserList";
-import {
-  SearchIcon,
-  ChevronDownIcon,
-  DeleteIcon
-} from "@/lib/icons/ui";
-import ConfirmationPopUp from "@/components/popUps";
+import { ConditionalRender } from "@/components/auth/ConditionalRender";
 import ModalEditUser from "./ModalEditUser";
 import ModalAddUser from "./ModalAddUser";
 import ModalAssignRoles from "./ModalAssignRoles";
+import ResponsiveUserTable from "./ResponsiveUserTable";
 import glassStyles from "@/app/styles/glassStyles.module.css";
-// No need for useSession here as it's used in UserForm
-
-// Using HeroUI components
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableColumn,
-  TableRow,
-  TableCell,
-  Input,
-  Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
   Chip,
   User as UserComponent,
   Pagination,
   Spinner,
 } from "@heroui/react";
+import ConfirmationPopUp from "@/components/popUps";
+import {
+  DeleteIcon
+} from "@/lib/icons/ui";
 import { Role } from "@/types/role";
-import { ConditionalRender } from "@/components/auth/ConditionalRender";
 
-
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-export default function UserList() {
+const UserList = () => {
   const {
     loading,
+    error,
+    totalData,
     page,
     pages,
-    setPageOnChange,
-    totalData,
-    refreshUsers,
     filterValue,
-    onSearchChange,
-    sortedItems,
-    classNames,
-    headerColumns,
-    visibleColumns,
-    setVisibleColumns,
     statusFilter,
-    setStatusFilter,
+    visibleColumns,
     sortDescriptor,
+    onSearchChange,
+    setStatusFilter,
+    setVisibleColumns,
     setSortDescriptor,
+    setPageOnChange,
+    deleteUser,
+    isLoadingDelete,
+    refreshUsers,
+    selectedUser,
+    setSelectedUser,
     columns,
     statusOptions,
-    filteredItems,
-    setFilterValue,
     statusColorMap,
-    handleDeleteUser,
-    isLoadingDelete
+    headerColumns,
+    classNames,
+    sortedItems,
   } = useUserList();
+
+  // Funciones para manejar acciones de usuario
+  const handleEditUser = useCallback((user: User) => {
+    setSelectedUser(user);
+  }, [setSelectedUser]);
+
+  const handleDeleteUser = useCallback((userId: number) => {
+    deleteUser(userId);
+  }, [deleteUser]);
+
+  const handleAssignRoles = useCallback((user: User) => {
+    setSelectedUser(user);
+  }, [setSelectedUser]);
+
+  const handleClearFilters = useCallback(() => {
+    onSearchChange("");
+    setStatusFilter("all");
+  }, [onSearchChange, setStatusFilter]);
 
   const renderCell = useCallback(
     (user: User, columnKey: React.Key) => {
@@ -143,21 +141,17 @@ export default function UserList() {
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
-              <ConditionalRender
-                condition={{ roles: ['Administrador'] }}
-              >
-                <ModalAssignRoles user={user} refreshUsers={refreshUsers}/>
-                <ModalEditUser refreshUsers={refreshUsers} user={user} />
-                <ConfirmationPopUp
-                  icon={<DeleteIcon />}
-                  tooltipContent="Eliminar Usuario"
-                  title="¿Eliminar Usuario?"
-                  message="El usuario se eliminara permanentemente"
-                  onConfirm={() => handleDeleteUser(user.id || 0)}
-                  isLoading={isLoadingDelete}
-                  color="danger"
-                />
-              </ConditionalRender>
+              <ModalAssignRoles user={user} refreshUsers={refreshUsers}/>
+              <ModalEditUser refreshUsers={refreshUsers} user={user} />
+              <ConfirmationPopUp
+                icon={<DeleteIcon />}
+                tooltipContent="Eliminar Usuario"
+                title="¿Eliminar Usuario?"
+                message="El usuario se eliminara permanentemente"
+                onConfirm={() => handleDeleteUser(user.id || 0)}
+                isLoading={isLoadingDelete}
+                color="danger"
+              />
             </div>
           );
         default:
@@ -177,88 +171,6 @@ export default function UserList() {
     [refreshUsers, statusColorMap, handleDeleteUser, isLoadingDelete]
   );
 
-  const topContent = useMemo(() => {
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            aria-label="Buscar por nombre, nombre completo o email"
-            isClearable
-            classNames={{
-              base: "w-full sm:max-w-[44%]",
-              inputWrapper: "border-1",
-            }}
-            placeholder="Buscar por nombre, nombre completo o email..."
-            size="sm"
-            startContent={<SearchIcon className="text-default-300" />}
-            value={filterValue}
-            variant="bordered"
-            onClear={() => setFilterValue("")}
-            onValueChange={onSearchChange}
-          />
-          <div className="flex gap-3">
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDownIcon className="text-small" />}
-                  size="sm"
-                  variant="flat"
-                >
-                  Estado
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Filtro de Estado"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {status.name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDownIcon className="text-small" />}
-                  size="sm"
-                  variant="flat"
-                >
-                  Columnas
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Columnas de la Tabla"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
-              >
-                {columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
-                    {capitalize(column.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <ModalAddUser refreshUsers={refreshUsers} />
-          </div>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total {totalData} usuarios
-          </span>
-        </div>
-      </div>
-    );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterValue, statusFilter, visibleColumns, onSearchChange, totalData, statusColorMap,columns]);
 
   const bottomContent = useMemo(() => {
     return (
@@ -275,11 +187,11 @@ export default function UserList() {
           onChange={setPageOnChange}
         />
         <span className="text-small text-default-400">
-          {filteredItems.length} usuarios encontrados
+          {totalData} usuarios encontrados
         </span>
       </div>
     );
-  }, [page, pages, setPageOnChange, filteredItems.length]);
+  }, [page, pages, setPageOnChange, totalData]);
 
   if (loading) {
     return (
@@ -291,47 +203,68 @@ export default function UserList() {
     );
   }
 
+  if (error) {
+    return (
+      <div className={`${glassStyles.glassCard} rounded-xl p-6`}>
+        <div className="text-center text-danger">
+          Error al cargar usuarios: {error}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className={`${glassStyles.glassCard} rounded-xl p-6`}>
-        <Table
-          isCompact
-          removeWrapper
-          aria-label="Tabla de usuarios con celdas personalizadas, paginación y ordenamiento"
-          bottomContent={bottomContent}
-          bottomContentPlacement="outside"
+      <div className={`${glassStyles.glassCard} rounded-xl p-4 lg:p-6`}>
+        {/* Tabla Responsive con filtros integrados */}
+        <ResponsiveUserTable
+          users={sortedItems}
+          headerColumns={headerColumns}
+          renderCell={renderCell}
           classNames={classNames}
-          selectionMode="none"
           sortDescriptor={sortDescriptor}
-          topContent={topContent}
-          topContentPlacement="outside"
-          onSortChange={setSortDescriptor}
-        >
-          <TableHeader columns={headerColumns}>
-            {(column) => (
-              <TableColumn
-                key={column.uid}
-                align={column.uid === "actions" ? "center" : "start"}
-                allowsSorting={column.sortable}
-              >
-                {column.name}
-              </TableColumn>
-            )}
-          </TableHeader>
-          <TableBody
-            emptyContent={"No se encontraron usuarios"}
-            items={sortedItems}
-          >
-            {(item) => (
-              <TableRow key={item.id}>
-                {(columnKey) => (
-                  <TableCell>{renderCell(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+          setSortDescriptor={setSortDescriptor}
+          onEditUser={handleEditUser}
+          onDeleteUser={handleDeleteUser}
+          onAssignRoles={handleAssignRoles}
+          statusColorMap={statusColorMap}
+          isLoadingDelete={isLoadingDelete}
+          filterValue={filterValue}
+          onSearchChange={onSearchChange}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          visibleColumns={visibleColumns}
+          setVisibleColumns={setVisibleColumns}
+          statusOptions={statusOptions}
+          columns={columns}
+          totalData={totalData}
+          onClearFilters={handleClearFilters}
+          addUserComponent={<ModalAddUser refreshUsers={refreshUsers} />}
+        />
+
+        {/* Paginación */}
+        <div className="mt-6">
+          {bottomContent}
+        </div>
       </div>
+
+      {/* Modales - Los modales manejan su propio estado con useDisclosure */}
+      {selectedUser && (
+        <>
+          <ModalEditUser
+            user={selectedUser}
+            refreshUsers={refreshUsers}
+          />
+          <ConditionalRender condition={{ roles: ["Administrador"] }}>
+            <ModalAssignRoles
+              user={selectedUser}
+              refreshUsers={refreshUsers}
+            />
+          </ConditionalRender>
+        </>
+      )}
     </>
   );
-}
+};
+
+export default UserList;

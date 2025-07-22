@@ -42,7 +42,8 @@ export default function useUserList() {
   );
   const [filterValue, setFilterValue] = useState("");
   const [statusFilter, setStatusFilter] = useState<Selection>("all");
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false)
+  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "name",
     direction: "ascending",
@@ -81,8 +82,9 @@ export default function useUserList() {
     {
       revalidateOnFocus: false, // Prevents refetch when tab gains focus
       revalidateOnMount: true,   // Fetch when component mounts
-      dedupingInterval: 10000,   // Deduplicate requests within 10 seconds
+      dedupingInterval: 500,     // Intervalo de debounce de 500ms
       keepPreviousData: true,    // Keep previous data while fetching new data
+      useDeferredValue: true     // Usa el valor diferido para evitar renderizados innecesarios
     }
   );
 
@@ -95,8 +97,10 @@ export default function useUserList() {
     return [...data || []];
   }, [data]);
 
+
+
   const onSearchChange = useCallback((value?: string) => {
-    if (value) {
+    if (value !== undefined) {
       setFilterValue(value);
     } else {
       setFilterValue("");
@@ -191,6 +195,12 @@ export default function useUserList() {
     filterValue,
     statusColorMap,
     isLoadingDelete,
-    handleDeleteUser
+    handleDeleteUser,
+    deleteUser: handleDeleteUser,
+    selectedUser,
+    setSelectedUser,
+    renderCell: () => null // Placeholder, será implementado en el componente
   };
 }
+
+export { useUserList };

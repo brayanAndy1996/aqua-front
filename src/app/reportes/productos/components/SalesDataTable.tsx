@@ -243,55 +243,137 @@ export default function SalesDataTable({
         </CardHeader>
 
         <CardBody className="px-0 py-0">
-          <Table
-            aria-label="Tabla de datos de ventas"
-            className="min-h-[400px]"
-            classNames={{
-              wrapper: "bg-transparent shadow-none",
-              th: "bg-white/5 backdrop-blur-sm border-b border-white/10 text-foreground-600",
-              td: "border-b border-white/5 group-data-[first=true]:first:before:rounded-none group-data-[first=true]:last:before:rounded-none group-data-[middle=true]:before:rounded-none group-data-[last=true]:first:before:rounded-none group-data-[last=true]:last:before:rounded-none",
-              tr: "hover:bg-white/5 transition-colors",
-            }}
-          >
-            <TableHeader columns={columns}>
-              {(column) => (
-                <TableColumn
-                  key={column.key}
-                  allowsSorting={column.sortable}
-                  className="text-left"
-                >
-                  {column.label}
-                </TableColumn>
-              )}
-            </TableHeader>
-            <TableBody 
-              items={paginatedData}
-              emptyContent={
-                <div className="flex flex-col items-center justify-center py-12">
-                  <DownloadIcon size={48} className="text-foreground-300 mb-4" />
-                  <p className="text-foreground-500 text-lg">
-                    No hay datos de ventas disponibles
-                  </p>
-                  <p className="text-foreground-400 text-sm">
-                    Ajusta los filtros para ver más resultados
-                  </p>
-                </div>
-              }
+          {/* Vista Desktop - Tabla */}
+          <div className="hidden lg:block">
+            <Table
+              aria-label="Tabla de datos de ventas"
+              className="min-h-[400px]"
+              classNames={{
+                wrapper: "bg-transparent shadow-none",
+                th: "bg-white/5 backdrop-blur-sm border-b border-white/10 text-foreground-600",
+                td: "border-b border-white/5 group-data-[first=true]:first:before:rounded-none group-data-[first=true]:last:before:rounded-none group-data-[middle=true]:before:rounded-none group-data-[last=true]:first:before:rounded-none group-data-[last=true]:last:before:rounded-none",
+                tr: "hover:bg-white/5 transition-colors",
+              }}
             >
-              {(item) => (
-                <TableRow key={item.id}>
-                  {(columnKey) => (
-                    <TableCell>
-                      {renderCell(item, columnKey as string)}
-                    </TableCell>
-                  )}
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              <TableHeader columns={columns}>
+                {(column) => (
+                  <TableColumn
+                    key={column.key}
+                    allowsSorting={column.sortable}
+                    className="text-left"
+                  >
+                    {column.label}
+                  </TableColumn>
+                )}
+              </TableHeader>
+              <TableBody 
+                items={paginatedData}
+                emptyContent={
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <DownloadIcon size={48} className="text-foreground-300 mb-4" />
+                    <p className="text-foreground-500 text-lg">
+                      No hay datos de ventas disponibles
+                    </p>
+                    <p className="text-foreground-400 text-sm">
+                      Ajusta los filtros para ver más resultados
+                    </p>
+                  </div>
+                }
+              >
+                {(item) => (
+                  <TableRow key={item.id}>
+                    {(columnKey) => (
+                      <TableCell>
+                        {renderCell(item, columnKey as string)}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Vista Móvil - Cards */}
+          <div className="block lg:hidden p-4">
+            {paginatedData.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <DownloadIcon size={48} className="text-foreground-300 mb-4" />
+                <p className="text-foreground-500 text-lg">
+                  No hay datos de ventas disponibles
+                </p>
+                <p className="text-foreground-400 text-sm">
+                  Ajusta los filtros para ver más resultados
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {paginatedData.map((item) => (
+                  <Card key={item.id} className="w-full bg-white/5 backdrop-blur-sm border border-white/10">
+                    <CardBody className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Chip 
+                              size="sm" 
+                              variant="flat" 
+                              color="primary"
+                              className="font-mono"
+                            >
+                              #{item.id}
+                            </Chip>
+                            <Chip 
+                              size="sm" 
+                              variant="flat" 
+                              color="secondary"
+                              className="font-mono"
+                            >
+                              {item.quantity}
+                            </Chip>
+                          </div>
+                          <p className="font-medium text-foreground text-sm">
+                            {item.product_name}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-foreground-500">Precio Unitario:</span>
+                          <span className="text-sm font-mono text-success">
+                            {formatCurrency(item.unit_price)}
+                          </span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-foreground-500">Subtotal:</span>
+                          <span className="text-sm font-mono font-semibold text-success">
+                            {formatCurrency(item.subtotal)}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-foreground-500">Usuario:</span>
+                          <span className="text-sm font-mono text-foreground-500">
+                            {item.user_name}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-foreground-500">Fecha:</span>
+                          <span className="text-sm font-mono text-foreground-500">
+                            {item.date}
+                          </span>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
           
           {/* Paginación y selector de filas por página */}
-          <div className="flex justify-between items-center px-4 py-2 bg-white/5">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-4 px-4 py-2 bg-white/5">
             <div className="flex items-center gap-2">
               <span className="text-sm text-foreground-500">Filas por página:</span>
               <Select
