@@ -3,7 +3,7 @@ import { getSession } from 'next-auth/react';
 import { handleJWTExpiredLogout } from '@/lib/utils/authUtils';
 
 // Configuración base de axios
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aqua-back-9zpl.onrender.com';
 
 // Crear instancia de axios
 export const apiClient = axios.create({

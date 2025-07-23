@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { LoginCredentials, LoginResponse, RegisterCredentials } from '@/types/auth';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aqua-back-9zpl.onrender.com';
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
