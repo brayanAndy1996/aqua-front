@@ -2,10 +2,10 @@
 // app/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { AuthOptions } from "next-auth";
 import { authApi } from "@/apis/auth";
 
-export const authOptions: AuthOptions = {
+// Create the auth config
+const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -71,8 +71,7 @@ export const authOptions: AuthOptions = {
       return session;
     },
   }
-};
+});
 
-const handler = NextAuth(authOptions);
+// Export the API route handlers
 export { handler as GET, handler as POST };
-
