@@ -1,6 +1,5 @@
 import { Product } from "@/types/product";
 import { useState, useCallback } from "react";
-import { useSession } from 'next-auth/react';
 import { showSuccessToast } from "@/components/toastUtils";
 import { purchaseApi } from "@/apis/purchase.api";
 import { handleErrors } from "@/lib/utils/errors";
@@ -11,7 +10,6 @@ const useAddStock = (product: Product, refreshProducts: () => void, onClose: () 
     stockToAdd: 0,
     purchase_price: 0,
   });
-  const { data: session } = useSession();
 
   const handleStockChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
@@ -29,7 +27,7 @@ const useAddStock = (product: Product, refreshProducts: () => void, onClose: () 
     setIsLoading(true);
     try {
       // API call to update stock
-      const response = await purchaseApi.createPurchase(session?.user?.accessToken || '', {
+      const response = await purchaseApi.createPurchase({
         quantity: stateForm.stockToAdd,
         purchase_price: stateForm.purchase_price,
         product_id: product.id,
@@ -45,7 +43,7 @@ const useAddStock = (product: Product, refreshProducts: () => void, onClose: () 
     } finally {
       setIsLoading(false);
     }
-  }, [stateForm.stockToAdd, stateForm.purchase_price, product, refreshProducts, onClose, session?.user?.accessToken]);
+  }, [stateForm.stockToAdd, stateForm.purchase_price, product, refreshProducts, onClose]);
 
   return {
     stateForm,

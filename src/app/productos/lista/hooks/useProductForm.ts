@@ -112,11 +112,11 @@ export function useProductForm({ product, onSuccess }: UseProductFormProps) {
     try {
       if (product?.id) {
         // Update existing product - this is a placeholder until the API is implemented
-        const response = await productApi.updateProduct(session?.user?.accessToken || "", product.id, formData);
+        const response = await productApi.updateProduct(product.id, formData);
         showSuccessToast("Producto actualizado", response.message);
       } else {
         // Create new product - this is a placeholder until the API is implemented
-        const response = await productApi.createProduct(session?.user?.accessToken || "", formData);
+        const response = await productApi.createProduct(formData);
         showSuccessToast("Producto creado", response.message);
       }
       onSuccess();

@@ -37,7 +37,7 @@ export function useUserForm({ user, onSuccess, onCancel }: UseUserFormProps) {
     user?.id && status === 'authenticated' 
       ? ['user', user.id, session?.user?.accessToken] 
       : null,
-    ([, id, token]) => userApi.getUserById(token || '', id),
+    ([, id]) => userApi.getUserById(id),
     {
       revalidateOnFocus: false, 
       revalidateOnMount: true, 
@@ -46,7 +46,6 @@ export function useUserForm({ user, onSuccess, onCancel }: UseUserFormProps) {
 
   useEffect(() => {
     if (userData) {
-      console.log("🚀 ~ useEffect ~ userData:", userData)
       setFormData({
         email: userData.data.email || '',
         nombre: userData.data.nombre || '',
@@ -107,7 +106,7 @@ export function useUserForm({ user, onSuccess, onCancel }: UseUserFormProps) {
     setLoading(true);
     try {
       if (user?.id) { 
-        const response = await userApi.updateUser(session.user.accessToken, user.id, formData);
+        const response = await userApi.updateUser(user.id, formData);
         showSuccessToast('Usuario actualizado', response.message);
         onSuccess();
       } else {
@@ -117,7 +116,7 @@ export function useUserForm({ user, onSuccess, onCancel }: UseUserFormProps) {
           ...formData,
           roles: []
         };
-        const response = await userApi.createUser(session.user.accessToken, userData as Omit<User, 'id'>);
+        const response = await userApi.createUser(userData as Omit<User, 'id'>);
         showSuccessToast('Usuario creado', response.message);
         onSuccess();
       }

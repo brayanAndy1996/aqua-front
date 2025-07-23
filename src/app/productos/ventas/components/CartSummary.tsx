@@ -19,7 +19,6 @@ const CartSummary: React.FC<CartSummaryProps> = ({
   onCheckout,
   getSubtotal,
   getIGV,
-  token,
   idUser,
   refetch
 }) => {
@@ -90,7 +89,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
       
       setCheckoutProgress(50);
       
-      const responseSale = await saleApi.createSale(token, saleItems, idUser);
+      const responseSale = await saleApi.createSale(saleItems, idUser);
       console.log("🚀 ~ handleProcesarVenta ~ responseSale:", responseSale)
       
       setCheckoutProgress(100);

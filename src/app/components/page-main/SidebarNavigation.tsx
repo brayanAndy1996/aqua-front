@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { moduleApi } from '@/apis/modules';
-import { useSession } from 'next-auth/react';
 import { ModuleInterface } from '@/types/module';
 import { 
   HomeIcon, ChevronDownIcon, MenuIcon, CloseIcon,
@@ -27,7 +26,6 @@ const SidebarNavigation = () => {
   const router = useRouter();
   const [openIds, setOpenIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
-  const { data: session } = useSession();
 
   const colors = {
     primary: {
@@ -75,7 +73,7 @@ const SidebarNavigation = () => {
     const fetchModules = async () => {
       try {
         setLoading(true);
-        const response = await moduleApi.fetchModuleTree(session?.user?.accessToken || '');
+        const response = await moduleApi.fetchModuleTree();
         setModules(response.data);
         setLoading(false);
       } catch (error) {
@@ -85,7 +83,7 @@ const SidebarNavigation = () => {
     };
 
     fetchModules();
-  }, [session?.user?.accessToken]);
+  }, []);
 
   const toggleOpen = (id: number) => {
     setOpenIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);

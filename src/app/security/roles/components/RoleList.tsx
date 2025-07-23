@@ -27,7 +27,7 @@ export default function RoleList({ cls, onEditRole }: RoleListProps) {
     try {
       setLoading(true);
       const data = await roleApi.getRoles();
-      setRoles(data);
+      setRoles(data.data);
     } catch (error) {
       console.error('Error fetching roles:', error);
     } finally {

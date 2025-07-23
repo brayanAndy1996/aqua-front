@@ -7,17 +7,14 @@ import {
   ModalBody,
   ModalHeader,
   Button,
-  useDisclosure,
-  Spinner,
+  useDisclosure
 } from "@heroui/react";
 import ProductForm from "./ProductForm";
 import { PlusIcon } from "@/lib/icons/ui";
-import { Product } from "@/types/product";
 
 const ModalAddProduct = ({ refreshProducts }: { refreshProducts: () => void }) => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const handleSuccess = () => {
     onClose();
@@ -91,9 +88,6 @@ const ModalAddProduct = ({ refreshProducts }: { refreshProducts: () => void }) =
                   product={null}
                   onSuccess={handleSuccess}
                   onCancel={handleCancel}
-                  isLoading={loading}
-                  setIsLoading={setLoading}
-                  setError={setError}
                 />
               </div>
             </div>

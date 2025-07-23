@@ -28,7 +28,7 @@ export default function SalesReports() {
     metricsData, 
     chartData, 
     loading
-  } = useSalesReports(filters);
+  } = useSalesReports(filters as unknown as { [key: string]: string | number | boolean | null });
 
   const handleFiltersChange = (newFilters: typeof filters) => {
     setFilters(newFilters);

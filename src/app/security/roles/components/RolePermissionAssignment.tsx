@@ -20,13 +20,6 @@ interface RolePermissionAssignmentProps {
   };
 }
 
-// The component lets an admin pick a role and toggle which permissions the role has.
-// It expects the backend API described in memories:
-//   GET  /api/roles/traer-roles              -> list of roles
-//   GET  /api/permissions/traer-permisos     -> list of all permissions
-//   GET  /api/roles/traer-rol/:id            -> returns role with its permissions property (array of permission ids)
-//   POST /api/roles/assign-permission        -> { roleId, permissionId }
-//   DELETE /api/roles/remove-permission      -> { roleId, permissionId }
 export default function RolePermissionAssignment({ cls }: RolePermissionAssignmentProps) {
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);

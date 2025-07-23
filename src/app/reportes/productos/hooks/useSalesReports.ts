@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
-import { useSession } from 'next-auth/react';
 import { reportApi } from '@/apis/report.api';
 import { dataReportVentas } from '@/types/report';
 import { colorsToGraphDoughnut } from '@/lib/constants/colors';
 import { formDataDaily, formDataMonthly, salesAgrupTo } from '@/lib/utils/reports';
 import { formDataReportVentas } from '@/types/report';
-import { filtersReportToVentas } from '@/types/report';
 
 const formData = (data: dataReportVentas): formDataReportVentas => {
   
@@ -39,27 +37,24 @@ const formData = (data: dataReportVentas): formDataReportVentas => {
   };
 };
 
-export default function useSalesReports(filters: filtersReportToVentas) {
-  const { data: session, status } = useSession();
+export default function useSalesReports(filters: { [key: string]: string | number | boolean | null }) {
 
   // Crear clave única para SWR basada en filtros
   const key = useMemo(() => {
-    if (status !== 'authenticated' || !session?.user?.accessToken) return null;
     
     return [
       'sales-reports',
-      session.user.accessToken,
       {...filters}
     ];
-  }, [status, session, filters]);
+  }, [filters]);
 
   // Usar SWR para obtener datos (por ahora mock data)
   const { data, error, isLoading, mutate } = useSWR(
     key,
-    async ([ , accessToken, filters]: [string, string, filtersReportToVentas]) => {
+    async ([ , filters]: [string, { [key: string]: string | number | boolean }]) => {
       
       // TODO: Reemplazar con llamada real a la API
-      const response = await reportApi.getReportVentasByFilters(accessToken, filters);
+      const response = await reportApi.getReportVentasByFilters(filters);
       return formData(response.data)
     },
     {

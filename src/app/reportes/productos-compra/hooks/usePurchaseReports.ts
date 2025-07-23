@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
-import { useSession } from 'next-auth/react';
 import { reportApi } from '@/apis/report.api';
 import { filtersReportToVentas, dataReportCompras } from '@/types/report';
 import { colorsToGraphDoughnut } from '@/lib/constants/colors';
@@ -40,26 +39,23 @@ const formData = (data: dataReportCompras) => {
 };
 
 export default function usePurchaseReports(filters: filtersReportToVentas) {
-  const { data: session, status } = useSession();
 
   // Crear clave única para SWR basada en filtros
   const key = useMemo(() => {
-    if (status !== 'authenticated' || !session?.user?.accessToken) return null;
     
     return [
       'purchase-reports',
-      session.user.accessToken,
       {...filters}
     ];
-  }, [status, session, filters]);
+  }, [filters]);
 
   // Usar SWR para obtener datos usando la API real
   const { data, error, isLoading, mutate } = useSWR(
     key,
-    async ([ , accessToken, filters]: [string, string, filtersReportToVentas]) => {
+    async ([ , filters]: [string, filtersReportToVentas]) => {
       
       // Llamada real a la API de compras
-      const response = await reportApi.getReportComprasByFilters(accessToken, filters);
+      const response = await reportApi.getReportComprasByFilters(filters as unknown as { [key: string]: string | number | boolean });
       return formData(response.data);
     },
     {

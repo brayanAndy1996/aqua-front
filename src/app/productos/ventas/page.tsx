@@ -92,7 +92,6 @@ const VentasPage = () => {
               getSubtotal={getSubtotal}
               getIGV={getIGV}
               refetch={refetch}
-              token={session?.user?.accessToken || ''}
               idUser={session?.user?.id || 0}
             />
           </div>

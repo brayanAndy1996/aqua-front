@@ -40,7 +40,6 @@ export interface CartSummaryProps {
   onCheckout: () => void;
   getSubtotal: () => number;
   getIGV: () => number;
-  token: string;
   idUser: number | string;
   refetch: () => void;
 }

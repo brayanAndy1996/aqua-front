@@ -12,11 +12,11 @@ export const useProducts = () => {
 
   const key = useMemo(() => {
     if (status !== 'authenticated' || !session?.user?.accessToken) return null;
-    return ['products', session.user.accessToken];
+    return ['products'];
   }, [session, status]);
 
-  const productFetcher = async ([, token]: [string, string]) => {
-    const response = await productApi.getProducts(token);
+  const productFetcher = async () => {
+    const response = await productApi.getProducts();
     return response.data.filter(product => product.is_active);
   };
 

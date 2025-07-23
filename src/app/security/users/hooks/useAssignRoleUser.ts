@@ -32,7 +32,7 @@ export function useAssignRoleUser({ user, onSuccess, initialSelectedRoles = [] }
   // Fetch roles using SWR with proper typing
   const { data: rolesResponse, error: rolesError } = useSWR<{ data: Role[] }>(
     status === 'authenticated' ? 'roles' : null,
-    () => roleApi.getOnlyRoles(session?.user?.accessToken || ''),
+    () => roleApi.getOnlyRoles(),
     {
       revalidateOnFocus: false,
       revalidateOnMount: true,
@@ -44,7 +44,7 @@ export function useAssignRoleUser({ user, onSuccess, initialSelectedRoles = [] }
   // Fetch user details using SWR with proper typing
   const { data: userResponse, error: userError, mutate: mutateUser } = useSWR<ResponseUserById>(
     user?.id && status === 'authenticated' ? ['user', user.id] : null,
-    () => userApi.getUserById(session?.user?.accessToken || '', user?.id || 0)
+    () => userApi.getUserById(user?.id || 0)
       .then(response => ({
         ...response,
         data: {
@@ -97,7 +97,7 @@ export function useAssignRoleUser({ user, onSuccess, initialSelectedRoles = [] }
     
     setLoading(true);
     try {
-      const response = await userApi.assignRoles(session.user.accessToken, user.id, selectedRoles.map(Number));
+      const response = await userApi.assignRoles(user.id, selectedRoles.map(Number));
       showSuccessToast('Éxito', response.message);
       if (onSuccess) {
         onSuccess();

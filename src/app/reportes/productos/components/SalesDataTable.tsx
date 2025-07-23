@@ -36,7 +36,6 @@ export default function SalesDataTable({
   loading = false, 
   title = "Datos de Ventas" 
 }: SalesDataTableProps) {
-  console.log("🚀 ~ salesData:", salesData)
   // Estado para la paginación
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);

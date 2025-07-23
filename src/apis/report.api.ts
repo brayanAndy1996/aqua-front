@@ -1,24 +1,13 @@
-import axios from 'axios';
-import { ResponseReportVentas, filtersReportToVentas, ResponseReportCompras } from '@/types/report';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { ResponseReportVentas, ResponseReportCompras } from '@/types/report';
+import { apiGet, buildUrl } from '@/lib/api/apiWrapper';
 
 export const reportApi = {
-    getReportVentasByFilters: async (accessToken: string, filters: filtersReportToVentas): Promise<ResponseReportVentas> => {
-        const response = await axios.get(`${API_URL}/reportes/ventas`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-            params: {
-                ...filters
-            }
-        });
-        return response.data;
+    getReportVentasByFilters: async (filters: { [key: string]: string | number | boolean } = {}): Promise<ResponseReportVentas> => {
+        const url = buildUrl('/reportes/ventas', filters);
+        return await apiGet<ResponseReportVentas>(url);
     },
-    getReportComprasByFilters: async (accessToken: string, filters: filtersReportToVentas): Promise<ResponseReportCompras> => {
-        const response = await axios.get(`${API_URL}/reportes/compras`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-            params: {
-                ...filters
-            }
-        });
-        return response.data;
+    getReportComprasByFilters: async (filters: { [key: string]: string | number | boolean } = {}): Promise<ResponseReportCompras> => {
+        const url = buildUrl('/reportes/compras', filters);
+        return await apiGet<ResponseReportCompras>(url);
     },
 }

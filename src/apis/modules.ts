@@ -1,28 +1,13 @@
-import axios from 'axios';
-import { ModuleResponse } from '@/types/module';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { ModuleResponse } from '@/types/module';
+import { apiGet, buildUrl } from '@/lib/api/apiWrapper';
 export const moduleApi = {
-    fetchModules: async (accessToken: string): Promise<ModuleResponse> => {
-        try {
-            const response = await axios.get<ModuleResponse>(`${API_URL}/modules/traer-modulos`, {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching modules:', error);
-            throw error;
-        }
+    fetchModules: async (): Promise<ModuleResponse> => {
+        const url = buildUrl(`/modules/traer-modulos`);
+        return await apiGet<ModuleResponse>(url);
     },
-    fetchModuleTree: async (accessToken: string): Promise<ModuleResponse> => {
-        try {
-            const response = await axios.get<ModuleResponse>(`${API_URL}/modules/traer-arbol-modulos`, {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching module tree:', error);
-            throw error;
-        }
+    fetchModuleTree: async (): Promise<ModuleResponse> => {
+        const url = buildUrl(`/modules/traer-arbol-modulos`);
+        return await apiGet<ModuleResponse>(url);
     },
 };
