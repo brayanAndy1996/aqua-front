@@ -25,7 +25,7 @@ export const productApi = {
     },
     
     updateProduct: async (productId: number, productData: Partial<Product>): Promise<ResponseProductById> => {
-        return await apiPut<ResponseProductById, Partial<Product>>(`/productos/editar-producto/${productId}`, productData);
+        return await apiPut<ResponseProductById, Partial<Product>>(`/productos/actualizar-producto/${productId}`, productData);
     },
     
     deleteProduct: async (productId: number): Promise<ResponseProductById> => {

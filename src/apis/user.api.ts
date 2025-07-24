@@ -34,7 +34,7 @@ export const userApi = {
     },
     
     assignRoles: async (userId: number, roleIds: number[]): Promise<ResponseUserById> => {
-        return await apiPost<ResponseUserById, { userId: number; roleIds: number[] }>('/users/asignar-roles', {
+        return await apiPost<ResponseUserById, { userId: number; roleIds: number[] }>('/users/assign-roles', {
             userId,
             roleIds
         });
